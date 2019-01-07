@@ -55,7 +55,7 @@ func coloringText(scanner *bufio.Scanner) string {
 				output += colorBoldRed + httpinfo[2] + colorDefault
 			}
 
-			output += "\n"
+			output += "\n\n"
 		}
 
 		line++
