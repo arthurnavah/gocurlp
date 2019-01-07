@@ -2,8 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 )
@@ -18,13 +19,29 @@ func main() {
 		log.Fatal("No se esta recibiendo entrada por pipes")
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-
-	for {
-		input, err := reader.ReadString('\n')
-		if err != nil && err == io.EOF {
-			break
-		}
-		fmt.Println(input)
+	scanner := bufio.NewScanner(os.Stdin)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
 	}
+
+	var jsonCURL string
+
+	for scanner.Scan() {
+		if scanner.Text() != "" {
+			if scanner.Text()[0] == '{' {
+				jsonCURL = scanner.Text()
+			} else {
+				fmt.Println(scanner.Text())
+			}
+		}
+	}
+
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, []byte(jsonCURL), "", "    ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(prettyJSON.String())
+
 }
