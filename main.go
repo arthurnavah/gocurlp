@@ -7,6 +7,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+)
+
+const (
+	colorBoldBlue   = "\033[1;34m"
+	colorBoldGreen  = "\033[1;32m"
+	colorBoldWhite  = "\033[1;37m"
+	colorBoldRed    = "\033[1;31m"
+	colorBoldCyan   = "\033[1;36m"
+	colorBoldYellow = "\033[1;33m"
 )
 
 func main() {
@@ -26,14 +36,24 @@ func main() {
 
 	var jsonCURL string
 
+	line := 1
 	for scanner.Scan() {
-		if scanner.Text() != "" {
-			if scanner.Text()[0] == '{' {
-				jsonCURL = scanner.Text()
-			} else {
-				fmt.Println(scanner.Text())
+		if line > 1 {
+			if scanner.Text() != "" {
+				if scanner.Text()[0] == '{' {
+					jsonCURL = scanner.Text()
+				} else {
+					fmt.Println(scanner.Text())
+				}
 			}
+		} else {
+			httpinfo := strings.Split(scanner.Text(), " ")
+			fmt.Print(colorBoldBlue + httpinfo[0] + " ")
+			fmt.Print(colorBoldGreen + httpinfo[1] + " ")
+			fmt.Println(colorBoldCyan + httpinfo[2] + colorBoldWhite)
 		}
+
+		line++
 	}
 
 	var prettyJSON bytes.Buffer
