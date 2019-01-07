@@ -49,9 +49,21 @@ func main() {
 			}
 		} else {
 			httpinfo := strings.Split(scanner.Text(), " ")
-			fmt.Print(colorBoldBlue + httpinfo[0] + " ")
-			fmt.Print(colorBoldGreen + httpinfo[1] + " ")
-			fmt.Println(colorBoldCyan + httpinfo[2] + colorDefault)
+			fmt.Println()
+
+			fmt.Print(colorBoldWhite + httpinfo[0] + " " + colorDefault)
+			if httpinfo[1][0] == '2' {
+				fmt.Print(colorBoldGreen + httpinfo[1] + " ")
+				fmt.Print(colorBoldGreen + httpinfo[2] + colorDefault)
+			} else if httpinfo[1][0] == '3' {
+				fmt.Print(colorBoldBlue + httpinfo[1] + " ")
+				fmt.Print(colorBoldBlue + httpinfo[2] + colorDefault)
+			} else {
+				fmt.Print(colorBoldRed + httpinfo[1] + " ")
+				fmt.Print(colorBoldRed + httpinfo[2] + colorDefault)
+			}
+
+			fmt.Println()
 		}
 
 		line++
