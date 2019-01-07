@@ -1,5 +1,10 @@
-# Go-cURLPretty
+# gocurlp
 Programa para formatear salida de comando `curl -i`
 
-# Uso
-`curl -i localhost:8080 | go run main.go`
+# Instalacion
+```sh
+go get github.com/arthurnavah/gocurlp
+```
+
+## Uso
+`curl -i localhost:8080 | gocurlp`
