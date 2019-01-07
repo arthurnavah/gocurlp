@@ -44,7 +44,10 @@ func main() {
 				if scanner.Text()[0] == '{' {
 					jsonCURL = scanner.Text()
 				} else {
-					fmt.Println(scanner.Text())
+					header := strings.SplitN(scanner.Text(), ":", 2)
+					fmt.Print(colorBoldBlue + header[0] + ":" + colorDefault)
+					fmt.Print(colorBoldWhite + header[1] + colorDefault)
+					fmt.Println()
 				}
 			}
 		} else {
