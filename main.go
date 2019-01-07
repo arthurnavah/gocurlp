@@ -17,6 +17,7 @@ const (
 	colorBoldRed    = "\033[1;31m"
 	colorBoldCyan   = "\033[1;36m"
 	colorBoldYellow = "\033[1;33m"
+	colorDefault    = "\033[0m"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 			httpinfo := strings.Split(scanner.Text(), " ")
 			fmt.Print(colorBoldBlue + httpinfo[0] + " ")
 			fmt.Print(colorBoldGreen + httpinfo[1] + " ")
-			fmt.Println(colorBoldCyan + httpinfo[2] + colorBoldWhite)
+			fmt.Println(colorBoldCyan + httpinfo[2] + colorDefault)
 		}
 
 		line++
