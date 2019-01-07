@@ -20,6 +20,7 @@ const (
 	colorDefault    = "\033[0m"
 )
 
+//coloringText Coloria e indenta la entrada
 func coloringText(scanner *bufio.Scanner) string {
 	var output, jsonCURL string
 	var prettyJSON bytes.Buffer
@@ -55,7 +56,7 @@ func coloringText(scanner *bufio.Scanner) string {
 				output += colorBoldRed + httpinfo[2] + colorDefault
 			}
 
-			output += "\n"
+			output += "\n\n"
 		}
 
 		line++
