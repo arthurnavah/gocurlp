@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/arthurnavah/gocurlp/models"
 )
 
 const (
@@ -104,10 +106,12 @@ func main() {
 		log.Fatal("No se esta recibiendo entrada por pipes")
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-	if err := scanner.Err(); err != nil {
+	scanner := bufio.NewReader(os.Stdin)
+
+	curl, err := models.NewCURLData(scanner)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(coloringText(scanner))
+	fmt.Println(string(curl.Body))
 }
