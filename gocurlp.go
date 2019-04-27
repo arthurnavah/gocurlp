@@ -110,5 +110,4 @@ func main() {
 	}
 
 	fmt.Println(coloringText(scanner))
-
 }
