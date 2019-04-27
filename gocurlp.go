@@ -113,5 +113,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(curl.Body))
+	PrintDataCURL(curl)
+}
+
+//PrintDataCURL ...
+func PrintDataCURL(curl models.CURLData) {
+	httpinfo := curl.HTTPInfo
+
+	var colorVersion string
+
+	switch fmt.Sprintf("%d", httpinfo.StatusCode)[0] {
+	case '2':
+		colorVersion = colorBoldGreen
+	case '3':
+		colorVersion = colorBoldBlue
+	default:
+		colorVersion = colorBoldRed
+	}
+
+	fmt.Printf("%s%s%s %s%d%s %s%s%s\n",
+		colorBoldWhite, httpinfo.Version, colorDefault,
+		colorVersion, httpinfo.StatusCode, colorDefault,
+		colorVersion, httpinfo.Status, colorDefault,
+	)
+
+	return
 }
