@@ -105,6 +105,8 @@ func PrintDataCURL(curl models.CURLData) (err error) {
 			}
 		}
 		fmt.Println(newJSON)
+	} else {
+		fmt.Println(string(curl.Body))
 	}
 
 	return
