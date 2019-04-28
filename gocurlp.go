@@ -128,10 +128,10 @@ func PrintDataCURL(curl models.CURLData) (err error) {
 				newJSON += spaces + jsonLine + "\n"
 			}
 		}
-		fmt.Println(newJSON)
-	} else {
-		fmt.Println(string(curl.Body))
+		curl.Body = []byte(newJSON)
 	}
+
+	fmt.Println(string(curl.Body))
 
 	return
 }
