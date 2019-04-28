@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"strconv"
-	"strings"
 )
 
 //HTTPinfo ...
@@ -77,26 +76,16 @@ func NewCURLData(read *bufio.Reader) (curl CURLData, err error) {
 
 		//Body
 		if passedEnter {
-			newHeaders := make(map[string]string)
-			for k, v := range curl.Headers {
-				newHeaders[strings.ToLower(k)] = v
-			}
-
-			if _, exist := newHeaders["content-type"]; exist {
-				if strings.Contains(newHeaders["content-type"], "application/json") {
-					if json.Valid(line) {
-						curl.Body, err = json.Marshal(string(line))
-						if err != nil {
-							return
-						}
-						curl.BodyType = "json"
-						break
-					}
+			if json.Valid(line) {
+				curl.Body = line
+				if err != nil {
+					return
 				}
+				curl.BodyType = "json"
+			} else {
+				curl.BodyType = "text"
+				curl.Body = line
 			}
-
-			curl.BodyType = "text"
-			curl.Body = line
 			break
 		}
 	}

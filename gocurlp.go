@@ -22,80 +22,6 @@ const (
 	colorDefault    = "\033[0m"
 )
 
-//coloringText Coloria e indenta la entrada
-func coloringText(scanner *bufio.Scanner) string {
-	var output, jsonCURL string
-	var prettyJSON bytes.Buffer
-
-	line := 1
-
-	for scanner.Scan() {
-		if line > 1 {
-			if scanner.Text() != "" {
-				if scanner.Text()[0] == '{' {
-					jsonCURL = scanner.Text()
-				} else {
-					header := strings.SplitN(scanner.Text(), ":", 2)
-
-					output += colorBoldBlue + header[0] + ":" + colorDefault
-					output += colorBoldWhite + header[1] + colorDefault
-					output += "\n"
-				}
-			}
-		} else {
-			httpinfo := strings.Split(scanner.Text(), " ")
-			output += "\n"
-
-			output += colorBoldWhite + httpinfo[0] + " " + colorDefault
-			if httpinfo[1][0] == '2' {
-				output += colorBoldGreen + httpinfo[1] + " "
-				output += colorBoldGreen + httpinfo[2] + colorDefault
-			} else if httpinfo[1][0] == '3' {
-				output += colorBoldBlue + httpinfo[1] + " "
-				output += colorBoldBlue + httpinfo[2] + colorDefault
-			} else {
-				output += colorBoldRed + httpinfo[1] + " "
-				output += colorBoldRed + httpinfo[2] + colorDefault
-			}
-
-			output += "\n\n"
-		}
-
-		line++
-	}
-
-	err := json.Indent(&prettyJSON, []byte(jsonCURL), "", "    ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	readerJSON := strings.NewReader(prettyJSON.String())
-	scannerJSON := bufio.NewScanner(readerJSON)
-
-	var newJSON string
-	for scannerJSON.Scan() {
-		var spaces string
-		for _, v := range scannerJSON.Text() {
-			if v == ' ' {
-				spaces += " "
-			} else {
-				break
-			}
-		}
-
-		jsonLine := strings.TrimSpace(scannerJSON.Text())
-		jsonFields := strings.SplitN(jsonLine, ":", 2)
-
-		if jsonFields[0][0] == '"' {
-			newJSON += spaces + colorBoldYellow + jsonFields[0] + colorDefault + ":" + jsonFields[1] + "\n"
-		} else {
-			newJSON += spaces + jsonLine + "\n"
-		}
-	}
-	output += "\n" + newJSON
-
-	return output
-}
-
 func main() {
 	info, err := os.Stdin.Stat()
 	if err != nil {
@@ -117,7 +43,7 @@ func main() {
 }
 
 //PrintDataCURL ...
-func PrintDataCURL(curl models.CURLData) {
+func PrintDataCURL(curl models.CURLData) (err error) {
 	httpinfo := curl.HTTPInfo
 
 	var colorVersion string
@@ -142,6 +68,43 @@ func PrintDataCURL(curl models.CURLData) {
 			colorBoldBlue, k, colorDefault,
 			colorBoldWhite, v, colorDefault,
 		)
+	}
+
+	fmt.Println()
+
+	if curl.BodyType == "json" {
+		var bufJSON bytes.Buffer
+		err = json.Indent(&bufJSON, curl.Body, "", "    ")
+		if err != nil {
+			return
+		}
+
+		readerJSON := strings.NewReader(bufJSON.String())
+		scannerJSON := bufio.NewScanner(readerJSON)
+
+		var newJSON string
+		for scannerJSON.Scan() {
+			var spaces string
+			for _, v := range scannerJSON.Text() {
+				if v == ' ' {
+					spaces += " "
+				} else {
+					break
+				}
+			}
+
+			jsonLine := strings.TrimSpace(scannerJSON.Text())
+			jsonFields := strings.SplitN(jsonLine, ":", 2)
+
+			if jsonFields[0][0] == '"' && len(jsonFields) >= 2 {
+				if len(jsonFields) >= 2 {
+					newJSON += spaces + colorBoldYellow + jsonFields[0] + colorDefault + ":" + jsonFields[1] + "\n"
+				}
+			} else {
+				newJSON += spaces + jsonLine + "\n"
+			}
+		}
+		fmt.Println(newJSON)
 	}
 
 	return
