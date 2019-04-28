@@ -114,6 +114,7 @@ func main() {
 	}
 
 	PrintDataCURL(curl)
+	fmt.Println(curl.BodyType)
 }
 
 //PrintDataCURL ...

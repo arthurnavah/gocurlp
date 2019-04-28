@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"strconv"
+	"strings"
 )
 
 //HTTPinfo ...
@@ -40,6 +40,7 @@ type CURLData struct {
 	HTTPInfo HTTPinfo
 	Headers  map[string]string
 	Body     []byte
+	BodyType string
 }
 
 //NewCURLData ...
@@ -48,8 +49,9 @@ func NewCURLData(read *bufio.Reader) (curl CURLData, err error) {
 
 	var line []byte
 	var passedEnter bool
-	for lineNumber := 1; err == nil; lineNumber++ {
-		line, _, err = read.ReadLine()
+	var errEOF error
+	for lineNumber := 1; errEOF == nil; lineNumber++ {
+		line, _, errEOF = read.ReadLine()
 
 		//HTTPInfo
 		if lineNumber == 1 {
@@ -75,14 +77,26 @@ func NewCURLData(read *bufio.Reader) (curl CURLData, err error) {
 
 		//Body
 		if passedEnter {
-			if line[0] == '{' || line[0] == '[' {
-				curl.Body, err = json.Marshal(string(line))
-				if err != nil {
-					return
-				}
-			} else {
-				err = errors.New("El body esta codificado en un formato no soportado")
+			newHeaders := make(map[string]string)
+			for k, v := range curl.Headers {
+				newHeaders[strings.ToLower(k)] = v
 			}
+
+			if _, exist := newHeaders["content-type"]; exist {
+				if strings.Contains(newHeaders["content-type"], "application/json") {
+					if json.Valid(line) {
+						curl.Body, err = json.Marshal(string(line))
+						if err != nil {
+							return
+						}
+						curl.BodyType = "json"
+						break
+					}
+				}
+			}
+
+			curl.BodyType = "text"
+			curl.Body = line
 			break
 		}
 	}
