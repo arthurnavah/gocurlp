@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -22,7 +23,16 @@ const (
 	colorDefault    = "\033[0m"
 )
 
+var (
+	spacesIndent int
+	indentGuide  bool
+)
+
 func main() {
+	flag.IntVar(&spacesIndent, "spaces", 4, "Espacios de indentacion")
+	flag.BoolVar(&indentGuide, "guide", false, "Guia de indentacion")
+	flag.Parse()
+
 	info, err := os.Stdin.Stat()
 	if err != nil {
 		panic(err)
@@ -74,7 +84,13 @@ func PrintDataCURL(curl models.CURLData) (err error) {
 
 	if curl.BodyType == "json" {
 		var bufJSON bytes.Buffer
-		err = json.Indent(&bufJSON, curl.Body, "", "    ")
+
+		var spacesIndentString string
+		for i := 0; i < spacesIndent; i++ {
+			spacesIndentString += " "
+		}
+
+		err = json.Indent(&bufJSON, curl.Body, "", spacesIndentString)
 		if err != nil {
 			return
 		}
@@ -87,8 +103,12 @@ func PrintDataCURL(curl models.CURLData) (err error) {
 			var spaces string
 			for _, v := range scannerJSON.Text() {
 				if v == ' ' {
-					if len(spaces)%4 == 0 && len(spaces) > 0 {
-						spaces += "|"
+					if indentGuide {
+						if len(spaces)%spacesIndent == 0 && len(spaces) > 0 {
+							spaces += "|"
+						} else {
+							spaces += " "
+						}
 					} else {
 						spaces += " "
 					}
