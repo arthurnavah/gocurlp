@@ -114,7 +114,6 @@ func main() {
 	}
 
 	PrintDataCURL(curl)
-	fmt.Println(curl.BodyType)
 }
 
 //PrintDataCURL ...
@@ -137,6 +136,13 @@ func PrintDataCURL(curl models.CURLData) {
 		colorVersion, httpinfo.StatusCode, colorDefault,
 		colorVersion, httpinfo.Status, colorDefault,
 	)
+
+	for k, v := range curl.Headers {
+		fmt.Printf("%s%s%s:%s%s%s\n",
+			colorBoldBlue, k, colorDefault,
+			colorBoldWhite, v, colorDefault,
+		)
+	}
 
 	return
 }
