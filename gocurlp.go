@@ -87,7 +87,11 @@ func PrintDataCURL(curl models.CURLData) (err error) {
 			var spaces string
 			for _, v := range scannerJSON.Text() {
 				if v == ' ' {
-					spaces += " "
+					if len(spaces)%4 == 0 && len(spaces) > 0 {
+						spaces += "|"
+					} else {
+						spaces += " "
+					}
 				} else {
 					break
 				}
